@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+import subprocess
+
+url = "https://docs.google.com/document/d/1S8VUpniVF_eH0olrhNoWUxbq5Ufm1Z3kv2EHAKaBM4w/edit?tab=t.0#bookmark=id.ibol8f34xyta"
+subprocess.run(["cmd.exe", "/c", "start", url])
