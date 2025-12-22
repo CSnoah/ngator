@@ -1,5 +1,78 @@
 #!/usr/bin/env python3
-import subprocess
+# import subprocess
 
-url = "https://docs.google.com/document/d/1S8VUpniVF_eH0olrhNoWUxbq5Ufm1Z3kv2EHAKaBM4w/edit?tab=t.0#bookmark=id.ibol8f34xyta"
-subprocess.run(["cmd.exe", "/c", "start", url])
+# url = "https://docs.google.com/document/d/1S8VUpniVF_eH0olrhNoWUxbq5Ufm1Z3kv2EHAKaBM4w/edit?tab=t.0#bookmark=id.ibol8f34xyta"
+# subprocess.run(["cmd.exe", "/c", "start", url])
+
+import sys
+from enum import Enum
+
+arg_flag = ""
+arg_params = []
+
+# --------------------------------------------------------------------------
+
+# Funciton definitions
+def add_path(path, alias):
+    print(f"add: path:{path} alias:{alias}")
+
+def delete_path(alias):
+    print("delpath")
+
+def list_paths():
+    print("lspath")
+
+def parse_args():
+    global arg_flag, arg_params
+    
+    if len(sys.argv) > 1:
+        for f in Flags:
+            if f.value == sys.argv[1]:
+                arg_flag = f
+                break;
+        arg_params = sys.argv[2:]
+
+# parse_args()
+# print(arg_flag)
+# print(arg_params)
+
+
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# global variables
+
+class Flags(Enum):
+    ADD = "-a"
+    DELETE = "-d"
+    LIST = "ls"
+
+# dictionary of actions
+actions = {
+    Flags.ADD: add_path,
+    Flags.DELETE: delete_path,
+    Flags.LIST: list_paths
+}
+
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Utility 
+
+def action(actn_flag: Flags):
+    global arg_flag, arg_params
+    if actn_flag in actions:
+        func = actions[actn_flag]
+        if len(arg_params) != func.__code__.co_argcount:
+            print(f"Error: {actn_flag} expects {func.__code__.co_argcount} arguments")
+        else:
+            actions[actn_flag](*arg_params)
+
+# --------------------------------------------------------------------------
+
+# add a path
+parse_args()
+action(arg_flag)
+
+
+
