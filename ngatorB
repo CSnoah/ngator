@@ -1,5 +1,149 @@
 #!/usr/bin/env python3
-import subprocess
+# import subprocess
 
-url = "https://docs.google.com/document/d/1S8VUpniVF_eH0olrhNoWUxbq5Ufm1Z3kv2EHAKaBM4w/edit?tab=t.0#bookmark=id.ibol8f34xyta"
-subprocess.run(["cmd.exe", "/c", "start", url])
+# url = "https://docs.google.com/document/d/1S8VUpniVF_eH0olrhNoWUxbq5Ufm1Z3kv2EHAKaBM4w/edit?tab=t.0#bookmark=id.ibol8f34xyta"
+# subprocess.run(["cmd.exe", "/c", "start", url])
+
+import sys
+import sqlite3
+import os
+from enum import Enum
+
+class Signal(Enum):
+    NONE = 0
+    ADD = 1
+    DELETE = 2
+    LIST = 3
+    GOTO = 4
+
+arg_flag = "0"
+arg_params = []
+prg_root = os.path.dirname(os.path.abspath(__file__))
+database_name = os.path.join(prg_root, "database", "ngator.db")
+broadcast = Signal.NONE
+
+# --------------------------------------------------------------------------
+
+# Funciton definitions
+def add_path(path, alias):
+    # print(f"add: path:{path} alias:{alias}")
+    with sqlite3.connect(database_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO paths (path, alias) VALUES (?, ?)",
+                (path, alias)
+        )
+
+def delete_path(alias):
+    # print("delpath")
+    return "nothing"
+
+def list_paths():
+    # print("lspath")
+    query_collector = ""
+    global broadcast
+    broadcast = Signal.LIST
+    # print("lsing")
+    with sqlite3.connect(database_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM paths"
+        )
+
+        for row in cursor.fetchall():
+            # print(row, file=sys.stderr)
+            # get_collector+=f"{row}\n"
+            alias = row[1]
+            path = row[3]
+            query_collector+=f"[ {alias} ] = {path}\n"
+            # print(row)
+        return query_collector
+
+def goto_path(alias):
+    global broadcast
+    broadcast = Signal.GOTO
+    with sqlite3.connect(database_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT path FROM paths WHERE alias = ?", (alias,)
+        )
+        query_out = cursor.fetchone()
+        if query_out:
+            # a match was found
+            snached_path = query_out[0]
+            return snached_path
+        # else:
+            # print(f"No path found for alias:: {alias}")
+
+def to_stdout(path):
+    # send the path to stdout
+    print(path)
+
+def parse_args():
+    global arg_flag, arg_params
+    # if len(sys.argv) == 2:
+    #     arg_flag = Flags.NOFLAG
+    #     arg_params = sys.argv[1:]
+    not_flag_cmd = False
+    if len(sys.argv) > 1:
+        for f in Flags:
+            if f.value == sys.argv[1]:
+                not_flag_cmd = True
+                arg_flag = f
+                arg_params = sys.argv[2:]
+                break;
+    if len(sys.argv) == 2 and not not_flag_cmd:
+        arg_flag = Flags.NOFLAG
+        arg_params = sys.argv[1:]
+
+
+# parse_args()
+# print(arg_flag)
+# print(arg_params)
+
+
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# global variables
+
+class Flags(Enum):
+    ADD = "-a"
+    DELETE = "-d"
+    LIST = "ls"
+    NOFLAG = "0"
+
+
+# dictionary of actions
+actions = {
+    Flags.ADD: add_path,
+    Flags.DELETE: delete_path,
+    Flags.LIST: list_paths,
+    Flags.NOFLAG: goto_path
+}
+
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Utility 
+
+def action(actn_flag: Flags):
+    global arg_flag, arg_params
+    # print(f"FLAG: {arg_flag}")
+    if actn_flag in actions:
+        func = actions[actn_flag]
+        if len(arg_params) != func.__code__.co_argcount:
+            # print(f"Error: {actn_flag} expects {func.__code__.co_argcount} arguments")
+            return "nothing"
+        else:
+            return actions[actn_flag](*arg_params)
+
+# --------------------------------------------------------------------------
+
+# add a path
+parse_args()
+out = action(arg_flag)
+to_stdout(out)
+
+# broadcast = Signal.GOTO
+sys.exit(broadcast.value)
