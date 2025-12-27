@@ -27,16 +27,42 @@ broadcast = Signal.NONE
 # Funciton definitions
 def add_path(path, alias):
     # print(f"add: path:{path} alias:{alias}")
+    global broadcast 
+    broadcast = Signal.ADD
     with sqlite3.connect(database_name) as conn:
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO paths (path, alias) VALUES (?, ?)",
                 (path, alias)
         )
+        conn.commit()
+    return f"successfull[add]: [ {alias} ] = {path}"
+
+def add_cwd_path(alias):
+    global broadcast 
+    broadcast = Signal.ADD
+    path = sys.argv[1]
+    with sqlite3.connect(database_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO paths (path, alias) VALUES (?, ?)",
+                (path, alias)
+        )
+        conn.commit()
+    return f"successfull[add]: [ {alias} ] = {path}"
 
 def delete_path(alias):
     # print("delpath")
-    return "nothing"
+    global broadcast 
+    broadcast = Signal.DELETE
+    with sqlite3.connect(database_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM paths WHERE alias = ?",
+            (alias,)
+        )
+        conn.commit()
+    return f"successfull[remove]: [ {alias} ]"
 
 def list_paths():
     # print("lspath")
@@ -62,18 +88,21 @@ def list_paths():
 def goto_path(alias):
     global broadcast
     broadcast = Signal.GOTO
+    # print("@@@ gotofunciton @@")
+    # print(f"## {alias} ##")
     with sqlite3.connect(database_name) as conn:
         cursor = conn.cursor()
         cursor.execute(
             "SELECT path FROM paths WHERE alias = ?", (alias,)
         )
         query_out = cursor.fetchone()
+        # print(f"(${query_out})")
         if query_out:
             # a match was found
             snached_path = query_out[0]
             return snached_path
-        # else:
-            # print(f"No path found for alias:: {alias}")
+        else:
+            print(f"No path found for alias:: {alias}")
 
 def to_stdout(path):
     # send the path to stdout
@@ -81,20 +110,18 @@ def to_stdout(path):
 
 def parse_args():
     global arg_flag, arg_params
-    # if len(sys.argv) == 2:
-    #     arg_flag = Flags.NOFLAG
-    #     arg_params = sys.argv[1:]
-    not_flag_cmd = False
+
+    noflag_cmd = False
     if len(sys.argv) > 1:
         for f in Flags:
-            if f.value == sys.argv[1]:
-                not_flag_cmd = True
+            if f.value == sys.argv[2]:
+                noflag_cmd = True
                 arg_flag = f
-                arg_params = sys.argv[2:]
+                arg_params = sys.argv[3:]
                 break;
-    if len(sys.argv) == 2 and not not_flag_cmd:
+    if len(sys.argv) == 3 and not noflag_cmd:
         arg_flag = Flags.NOFLAG
-        arg_params = sys.argv[1:]
+        arg_params = sys.argv[2:]
 
 
 # parse_args()
@@ -109,6 +136,7 @@ def parse_args():
 
 class Flags(Enum):
     ADD = "-a"
+    ADD_CURRENT = '-ac'
     DELETE = "-d"
     LIST = "ls"
     NOFLAG = "0"
@@ -117,6 +145,7 @@ class Flags(Enum):
 # dictionary of actions
 actions = {
     Flags.ADD: add_path,
+    Flags.ADD_CURRENT: add_cwd_path,
     Flags.DELETE: delete_path,
     Flags.LIST: list_paths,
     Flags.NOFLAG: goto_path
@@ -130,20 +159,23 @@ actions = {
 def action(actn_flag: Flags):
     global arg_flag, arg_params
     # print(f"FLAG: {arg_flag}")
+    # print(f":: {arg_params}")
     if actn_flag in actions:
         func = actions[actn_flag]
         if len(arg_params) != func.__code__.co_argcount:
-            # print(f"Error: {actn_flag} expects {func.__code__.co_argcount} arguments")
-            return "nothing"
+            return print(f"Error: {actn_flag} expects {func.__code__.co_argcount} arguments")
         else:
             return actions[actn_flag](*arg_params)
 
 # --------------------------------------------------------------------------
 
-# add a path
+# set flag based on input
 parse_args()
+# perform action based on flag
 out = action(arg_flag)
+# send message through stdout to parent shell code
 to_stdout(out)
-
-# broadcast = Signal.GOTO
+if broadcast == Signal.NONE:
+    print(sys.argv)
+# send request through exit code to parent shell code
 sys.exit(broadcast.value)
