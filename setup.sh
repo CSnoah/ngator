@@ -10,7 +10,7 @@ mkdir -p "$config_dir"
 
 if [[ ! -f "$config_file" ]]; then
   touch "$config_file"
-  echo "[ACTION]: PROGM_DIR=\"$PWD\"" >> "$config_file"
+  echo "PROGM_DIR=\"$PWD\"" >> "$config_file"
   source "$config_file"
   echo "[NOTE]: ngator path: $PWD"
   echo "[NOTE]: If utility path changes update ng.config: PROGM_DIR=new-path"
