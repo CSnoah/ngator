@@ -104,6 +104,24 @@ def goto_path(alias):
         else:
             print(f"No path found for alias:: {alias}")
 
+def get_all_alias():
+    with sqlite3.connect(database_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT alias FROM paths"
+        )
+        all_alias = cursor.fetchall()
+        # remove tuples
+        flattened = []
+        for row in all_alias:
+            flattened.append(row[0])
+
+        # prep data as a string
+        s_all_alias = ' '.join(flattened)
+
+        # send data to stderr channel
+        print(s_all_alias, file=sys.stderr)
+
 def to_stdout(path):
     # send the path to stdout
     print(path)
@@ -177,5 +195,9 @@ out = action(arg_flag)
 to_stdout(out)
 if broadcast == Signal.NONE:
     print(sys.argv)
+
+# sent alias through err
+get_all_alias()
+
 # send request through exit code to parent shell code
 sys.exit(broadcast.value)

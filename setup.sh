@@ -51,6 +51,7 @@ if [ "$rc" != "NA" ]; then
 
 echo "SHELL CODE WRAPPER >> .$shell_name.rc"
 
+# read from the config file to get the PROGM_DIR
 cat << EOF >> "$rc"
 # ----------------------------------------------------------
 # ngator utility parent shell access/startup
