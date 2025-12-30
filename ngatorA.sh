@@ -24,17 +24,42 @@ shift
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------
-# stdout path
+
+# create temporary file
+stdout=$(mktemp)
+stderr=$(mktemp)
+
+# ---------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------
+# direct file descriptor ouput to temp files
 
 # stream=$(/mnt/c/Users/noahm/documents/dev_sandbox/ngator/ngatorB "$cwd" "$@")
-stream=$($PROGM_DIR/ngatorB "$cwd" "$@")
+# stream=$($PROGM_DIR/ngatorB "$cwd" "$@")
+
+"$PROGM_DIR/ngatorB" "$cwd" "$@" 1>"$stdout" 2>"$stderr"
+
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------
 # exitcode, shellcode request
 
+# extract the exit code of the most recently executed command
 request_channel=$?
 # ---------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------
+# capture out and err data
+
+path=$(<"$stdout")
+out_s=$(<"$stderr")
+out_a=($out_s)
+
+rm "$stdout" "$stderr"
+
+# ---------------------------------------------------------------------------------
+
+echo "${out_a[0]}"
 
 # ---------------------------------------------------------------------------------
 # parse request
@@ -42,15 +67,15 @@ request_channel=$?
 case "$request_channel" in
   0)
     echo "do nothing"
-    echo"$stream"
+    echo"$path"
     ;;
   1|2|3)
     # add, delte, or list message
-    echo "$stream"
+    echo "$path"
     ;;
   4)
     # echo "goto"
-    cd "$stream"
+    cd "$path"
     ;;
   *)
     echo "NA"
