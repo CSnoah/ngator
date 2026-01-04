@@ -5,10 +5,10 @@ import sqlite3
 import os
 
 prg_root = os.path.dirname(os.path.abspath(__file__))
-database_name = os.path.join(prg_root, "database", "ngator.db")
+database_path = os.path.join(prg_root, "..", "database", "ngator.db")
 
 # get all the aliases stored in the database
-with sqlite3.connect(database_name) as conn:
+with sqlite3.connect(database_path) as conn:
     cursor = conn.cursor()
     cursor.execute(
         "SELECT alias FROM paths"

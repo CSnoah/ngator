@@ -37,7 +37,9 @@ stderr=$(mktemp)
 # stream=$(/mnt/c/Users/noahm/documents/dev_sandbox/ngator/ngatorB "$cwd" "$@")
 # stream=$($PROGM_DIR/ngatorB "$cwd" "$@")
 
-"$PROGM_DIR/ngatorB" "$cwd" "$@" 1>"$stdout" 2>"$stderr"
+export PROGM_DIR
+
+"$PROGM_DIR/cmd_dispatch.py" "$cwd" "$@" 1>"$stdout" 2>"$stderr"
 
 # ---------------------------------------------------------------------------------
 
@@ -46,6 +48,7 @@ stderr=$(mktemp)
 
 # extract the exit code of the most recently executed command
 request_channel=$?
+
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------
@@ -57,6 +60,8 @@ out_a=($out_s)
 
 rm "$stdout" "$stderr"
 
+
+# echo $path
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------
