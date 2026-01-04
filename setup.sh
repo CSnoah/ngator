@@ -11,13 +11,12 @@ mkdir -p "$config_dir"
 if [[ ! -f "$config_file" ]]; then
   touch "$config_file"
   echo "PROGM_DIR=\"$PWD\"" >> "$config_file"
-  # source "$config_file"
   echo "[NOTE]: ngator path: $PWD"
   echo "[NOTE]: If utility path changes update ng.config: PROGM_DIR=new-path"
   echo "[NOTE]: Config location: ~/.config/ngator/ng.config"
 fi
 
-# if run setup butconfig file exists,
+# if run setup but config file exists,
 # and remove init from .bashrc still grabs PROGM_DIR
 source "$config_file"
 # ---------------------------------------------------------------------------------
@@ -58,7 +57,7 @@ cat << EOF >> "$rc"
 # ----------------------------------------------------------
 # ngator utility parent shell access/startup
 
-source "$PROGM_DIR/ngator.init.sh"
+source "$PROGM_DIR/init.sh"
 # ----------------------------------------------------------
 EOF
 

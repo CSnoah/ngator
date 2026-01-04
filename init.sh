@@ -11,13 +11,13 @@ source "$config_file"
 # cli interface command
 ngator() {
   cwd="$PWD"
-  source $PROGM_DIR/ngatorA.sh "$cwd" "$@"
+  source $PROGM_DIR/shell_execution.sh "$cwd" "$@"
 }
 alias ng='ngator'
 
 # mitigate autocomplete
 autoc() {
-  local db_aliases="$($PROGM_DIR/cmd_autocomplete.py)"
+  local db_aliases="$($PROGM_DIR/src/autocomplete.py)"
   local cur="${COMP_WORDS[COMP_CWORD]}"
   COMPREPLY=( $(compgen -W "${db_aliases}" -- "$cur") )
 }
