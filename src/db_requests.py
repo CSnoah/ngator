@@ -7,12 +7,15 @@ import sqlite3
 import os
 from enum import Enum
 
-project_root = os.path.dirname(os.path.join(os.path.dirname(__file__), ".."))
+# file_name = os.path.dirname(__file__).basename
+project_root = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # from resources import actions
 from resources import dispatch_context as context
+from resources import logger_context as logger
 
 # -------------------------------------------------------------------------
 # set different alias for dfferent components in the imported module
@@ -21,6 +24,7 @@ from resources import dispatch_context as context
 out_ctx = context
 
 # -------------------------------------------------------------------------
+# database queries
 
 prg_root = os.path.dirname(os.path.abspath(__file__))
 database_path = os.path.join(prg_root, "..", "database", "ngator.db")
@@ -94,7 +98,7 @@ def goto_path(alias):
             snached_path = query_out[0]
             return snached_path
         else:
-            print(f"No path found for alias:: {alias}")
+            logger.log(f"No path found for alias={alias}")
 
 
 

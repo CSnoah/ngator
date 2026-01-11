@@ -12,14 +12,27 @@ class Signal(Enum):
     GOTO = 4
 broadcast = Signal.NONE
 
-# input context
+# # input context (old API interface)
+# class Flags(Enum):
+#     ADD = "-a"
+#     ADD_CURRENT = '-ac'
+#     DELETE = "-d"
+#     LIST = "ls"
+#     NOFLAG = "0"
+# cmd_flag = "0"
+# cmd_args = []
+
+# input context (new API interface)
 class Flags(Enum):
-    ADD = "-a"
-    ADD_CURRENT = '-ac'
-    DELETE = "-d"
-    LIST = "ls"
-    NOFLAG = "0"
-cmd_flag = "0"
+    GOTO = 1
+    ADD = 2
+    ADD_CURRENT = 3
+    DELETE = 4
+    LIST = 5
+    DLOG_ON = 6
+    DLOG_OFF = 7
+    NO_FLAG = 8
+cmd_flag = Flags.NO_FLAG 
 cmd_args = []
 
 # -------------------------------------------------
