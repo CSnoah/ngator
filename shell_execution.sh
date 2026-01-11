@@ -59,9 +59,14 @@ out_s=$(<"$stderr")
 out_a=($out_s)
 
 rm "$stdout" "$stderr"
-
-
 # echo $path
+
+# ---------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------
+# report any debugging or errors to the command line
+echo -n "$out_s"
+
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------
@@ -69,11 +74,13 @@ rm "$stdout" "$stderr"
 
 case "$request_channel" in
   0)
-    echo "do nothing"
-    echo"$path"
+    # echo "do nothing"
+
+    # argparse prints to stdout for command mismatch
+    echo "$path"
     ;;
   1|2|3)
-    # add, delte, or list message
+    # subcommand feedback message
     echo "$path"
     ;;
   4)
@@ -81,7 +88,7 @@ case "$request_channel" in
     cd "$path"
     ;;
   *)
-    echo "NA"
+    echo "shell_execution.sh(~89):: -m command not recognized"
   esac
 # ---------------------------------------------------------------------------------
 
