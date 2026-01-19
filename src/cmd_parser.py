@@ -41,6 +41,8 @@ subcommand_set = {
     "delete", "del",
     # subcommands: ls (list commmand data)
     "list", "ls",
+    # subcommand: set a database field
+    "set",
     # subcommand: enable/disable logging
     "dlog"
 }
@@ -63,12 +65,12 @@ argp = []
 # -------------------------------------------------------------------------
 # pre argparse processing
 
-# raw arguments
-# sys.argv[0] = command(default)
-# sys.argv[1] = cwd(default)
+# documenting craw arguments
+# sys.argv[0] is= command(default)
+# sys.argv[1] is= cwd(default)
 # ------------------------------------
-# sys.argv[2] = subcommand(if present)
-# sys.argv[3] = subcommand argi(if present)
+# sys.argv[2] is= subcommand(if present)
+# sys.argv[3] is= subcommand argi(if present)
 
 # first two args are always provided despite user input, third on are not
 # so checking if the user inputed atlease one argument past ng
@@ -89,7 +91,7 @@ if argp:
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
-# argparse parsing
+# argparse subparser parsing
 
 parser = argparse.ArgumentParser(description="ngator cli parser")
 subparser = parser.add_subparsers(dest="command")
@@ -143,6 +145,67 @@ list_parser.add_argument(
     help="long listing of stored data"
 )
 
+# INFO: changes the parent shells current directory
+# CMD: ng set --field <alias> <entry>
+set_parser = subparser.add_parser(
+    "set",
+    help="set a database field or environment scope"
+)
+
+# enforeces only one tag specifier is used
+mode = set_parser.add_mutually_exclusive_group(required=True)
+
+mode.add_argument(
+    "--tag",
+    # action="store_true",
+    dest="tag_field",
+    nargs=2,
+    metavar=("alias", "tag"),
+    help="set the tag field: ng set --tag <alias> <tag-name>"
+)
+mode.add_argument(
+    "--alias",
+    dest="alias_field",
+    nargs=2,
+    metavar=("old-alias", "new-alias"),
+    help="rename a path's alias: ng set --alias <alias> <new-alias-name>"
+)
+mode.add_argument(
+    "--scope",
+    dest="scope",
+    metavar="tag",
+    help="set the environment tag scope: ng set --scope <tag>"
+)
+# mode.add_argument(
+#     "--tag",
+#     # action="store_true",
+#     dest="field",
+#     action="store_const",
+#     const="tag",
+#     help="set the tag field: ng set --tag <alias> <tag-name>"
+# )
+# mode.add_argument(
+#     "--alias",
+#     dest="field",
+#     action="store_const",
+#     const="alias",
+#     help="rename a path's alias: ng set --alias <alias> <new-alias-name>"
+# )
+# mode.add_argument(
+#     "--scope",
+#     dest="tag",
+#     help="set the environment tag scope: ng set --scope <alias> <tag>"
+# )
+# mode.add_argument(
+#     "--scope",
+#     # action="store_true",
+#     dest="field",
+#     action="store_const",
+#     const="scope",
+#     help="set the environment tag scope: ng set --scope <alias> <tag>"
+# )
+# set_parser.add_argument("set_args", nargs=2, help="ng set --field(or scope) <alias> <entry>")
+
 # INFO: activate debugger logging
 # CMD: ng dlog -t, ng dlog -f
 log_parser = subparser.add_parser(
@@ -188,6 +251,27 @@ match parsed_argp.command:
     case "goto" | "g":
         in_ctx.cmd_flag = context.Flags.GOTO
         in_ctx.cmd_args = [parsed_argp.cd_alias]
+    case "set":
+        if parsed_argp.scope:
+            in_ctx.cmd_flag = context.Flags.SET_SCOPE
+            # the scope associated with a specific tag name
+            in_ctx.cmd_args.append(parsed_argp.scope)
+        else:
+            in_ctx.cmd_flag = context.Flags.SET_FIELD
+            if parsed_argp.tag_field:
+                # flag = database query field
+                in_ctx.cmd_args.append("tag")
+                # alais
+                in_ctx.cmd_args.append(parsed_argp.tag_field[0])
+                # entry
+                in_ctx.cmd_args.append(parsed_argp.tag_field[1])
+            elif parsed_argp.alias_field:
+                # flag = database query field
+                in_ctx.cmd_args.append("alias")
+                # alais
+                in_ctx.cmd_args.append(parsed_argp.alias_field[0])
+                # entry
+                in_ctx.cmd_args.append(parsed_argp.alias_field[1])
     case "dlog":
         if parsed_argp.true:
             in_ctx.cmd_flag = context.Flags.DLOG_ON

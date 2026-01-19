@@ -79,7 +79,7 @@ case "$request_channel" in
     # argparse prints to stdout for command mismatch
     echo "$path"
     ;;
-  1|2|3)
+  1|2|3|5|6)
     # subcommand feedback message
     echo "$path"
     ;;
