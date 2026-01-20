@@ -74,6 +74,8 @@ actions = {
     in_ctx.Flags.DELETE: qy.delete_path,
     in_ctx.Flags.LIST: qy.list_paths,
     in_ctx.Flags.GOTO: qy.goto_path,
+    in_ctx.Flags.SET_FIELD: qy.set_field,
+    in_ctx.Flags.SET_SCOPE: env_req.set_scope,
     in_ctx.Flags.DLOG_ON: env_req.set_logger_on,
     in_ctx.Flags.DLOG_OFF: env_req.set_logger_off
 }
@@ -104,6 +106,7 @@ def dispatch(flag: in_ctx.Flags):
 result_set = dispatch(in_ctx.cmd_flag)
 # send message through stdout to parent shell code
 to_stdout(result_set)
+
 # no request identified
 # if out_ctx.broadcast == in_ctx.Signal.NONE:
     # print("=> cmd_dispatch.py argv: ", end="", file=sys.stderr)

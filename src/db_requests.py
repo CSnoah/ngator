@@ -24,6 +24,8 @@ from resources import logger_context as logger
 out_ctx = context
 
 # -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
 # database queries
 
 prg_root = os.path.dirname(os.path.abspath(__file__))
@@ -72,7 +74,6 @@ def list_paths():
     query_collector = ""
     global broadcast
     out_ctx.broadcast = context.Signal.LIST
-    # print("lsing")
     with sqlite3.connect(database_path) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -99,6 +100,23 @@ def goto_path(alias):
             return snached_path
         else:
             logger.log(f"No path found for alias={alias}")
+
+def set_field(field, alias, entry):
+    global broadcast
+    out_ctx.broadcast = context.Signal.SET_FIELD
+    valid_fields={"alias","tag","path"}
+    if field in valid_fields:
+        with sqlite3.connect(database_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                f"UPDATE paths SET {field}=? WHERE alias=?",
+                (entry, alias)
+            )
+        return f"successfull[set]: --{field} {alias} = new-name: {entry}"
+    else:
+        logger.log(f"field not in {valid_fields}")
+
+
 
 
 

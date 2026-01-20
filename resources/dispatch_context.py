@@ -10,6 +10,8 @@ class Signal(Enum):
     DELETE = 2
     LIST = 3
     GOTO = 4
+    SET_FIELD = 5
+    SET_SCOPE = 6
 broadcast = Signal.NONE
 
 # # input context (old API interface)
@@ -31,7 +33,9 @@ class Flags(Enum):
     LIST = 5
     DLOG_ON = 6
     DLOG_OFF = 7
-    NO_FLAG = 8
+    SET_FIELD = 8
+    SET_SCOPE = 9
+    NO_FLAG = 10
 cmd_flag = Flags.NO_FLAG 
 cmd_args = []
 
