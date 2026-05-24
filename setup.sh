@@ -22,6 +22,18 @@ source "$config_file"
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------
+# recreate .db from schema
+
+if [ ! -f database/ngator.db ]; then
+  echo "[ACTION]: Generating database ngator.db"
+  sqlite3 database/ngator.db < database/schema.sql
+else
+  echo "[Error]: Database already exists"
+fi
+
+# ---------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------
 # determine users shell
 
 shell_name=$(basename "$SHELL")

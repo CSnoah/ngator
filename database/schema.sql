@@ -1,0 +1,7 @@
+CREATE TABLE paths (
+id INTEGER PRIMARY KEY,
+alias TEXT,
+tag TEXT,
+path TEXT,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
