@@ -54,12 +54,12 @@ request_channel=$?
 # ---------------------------------------------------------------------------------
 # capture out and err data
 
-path=$(<"$stdout")
+target_path=$(<"$stdout")
 out_s=$(<"$stderr")
 out_a=($out_s)
 
 rm "$stdout" "$stderr"
-# echo $path
+# echo $target_path
 
 # ---------------------------------------------------------------------------------
 
@@ -77,15 +77,15 @@ case "$request_channel" in
     # echo "do nothing"
 
     # argparse prints to stdout for command mismatch
-    echo "$path"
+    echo "$target_path"
     ;;
   1|2|3|5|6)
     # subcommand feedback message
-    echo "$path"
+    echo "$target_path"
     ;;
   4)
     # echo "goto"
-    cd "$path"
+    cd "$target_path"
     ;;
   *)
     echo "shell_execution.sh(~89):: -m command not recognized"
