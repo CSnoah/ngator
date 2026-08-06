@@ -54,21 +54,21 @@ I use WSL for development and dislike saving projects in the WSL file system. Th
 
 <hr />
 
-**ng add -c <alias>**
+**ng add -c \<alias>**
 
 <img width="701" height="56" alt="image" src="https://github.com/user-attachments/assets/42884d87-9f51-432b-a69a-a3d94845466f" />
 
 <hr />
 
-**ng del <alias>**
+**ng del \<alias>**
 
 <img width="660" height="50" alt="image" src="https://github.com/user-attachments/assets/1cdc47b4-5036-401a-b163-fcf17308e541" />
 
 <hr />
 
-**ng <alias>**
+**ng \<alias>**
 
-<img width="587" height="50" alt="image" src="https://github.com/user-attachments/assets/923e649a-ba4a-4622-90e0-5e8b4f3910b8" />
+<img width="587" height="60" alt="image" src="https://github.com/user-attachments/assets/5f6a982d-987e-4f55-a268-1e26898848fc" />
 
 <hr />
 
